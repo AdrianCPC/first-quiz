@@ -1,4 +1,17 @@
+"""Module for printing python."""
 import sqlite3
+
+DB_NAME = "quiz_pets"
+
+def get_connection():
+  """connection to the db."""
+  return sqlite3.connect(DB_NAME)
+
+def drop_db():
+  """Drop all tables from the database."""
+  with get_connection() as con:
+    for table in ["animals", "people", "people_animals"]:
+      con.execute(f"drop table if exists {table}")
 
 TABLE_SCHEMA = """
     CREATE TABLE animals (
@@ -14,10 +27,21 @@ TABLE_SCHEMA = """
       favorite_color text not null
     );
     CREATE TABLE people_animals (
-      owner_id integer not null,
-      pet_id integer not null
+      owner_id integer not null REFERENCES people(person_id),
+      pet_id integer not null REFERENCES animals(animal_id),
+      PRIMARY KEY (owner_id, pet_id)
     );
 """
+
+def create_db():
+  """Create the db & insert initial data."""
+  drop_db()
+
+  with get_connection() as con:
+    con.executescript(TABLE_SCHEMA)
+    con.executemany("INSERT INTO animals VALUES(?, ?, ?, ?)", ANIMALS)
+    con.executemany("INSERT INTO people VALUES(?, ?, ?, ?)", PEOPLE)
+    con.executemany("INSERT INTO people_animals VALUES(?, ?)", PEOPLE_ANIMALS)
 
 ANIMALS = [
   (1, "petey", "gray whale", 38),
@@ -44,26 +68,6 @@ PEOPLE_ANIMALS = [
   (3, 5),  # karen, martin
 ]
 
-###
+create_db()
 # Utility functions for interacting with the database.
 # No need to look any further!
-###
-
-DB_NAME = "quiz_pets"
-
-def get_connection():
-  return sqlite3.connect(DB_NAME)
-
-def drop_db():
-  with get_connection() as con:
-    for table in ["animals", "people", "people_animals", "favorite_foods"]:
-      con.execute(f"drop table if exists {table}")
-
-def create_db():
-  drop_db()
-
-  with get_connection() as con:
-    con.executescript(TABLE_SCHEMA)
-    con.executemany("INSERT INTO animals VALUES(?, ?, ?, ?)", ANIMALS)
-    con.executemany("INSERT INTO people VALUES(?, ?, ?, ?)", PEOPLE)
-    con.executemany("INSERT INTO people_animals VALUES(?, ?)", PEOPLE_ANIMALS)
