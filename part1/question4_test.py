@@ -1,4 +1,4 @@
-import pets_db as pets_db
+import pets_db
 from question4 import sql_pets_owned_by_nobody, sql_only_owned_by_bessie, sql_pets_older_than_owner
 
 def test_question4_pets_older_than_owner():

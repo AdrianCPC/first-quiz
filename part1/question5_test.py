@@ -1,4 +1,4 @@
-import pets_db as pets_db
+import pets_db
 from question5 import sql_create_favorite_foods, sql_alter_tables_with_favorite_food, sql_select_all_vegetarian_pets
 
 FOODS = [
@@ -29,6 +29,7 @@ def insert_foods(con):
   con.executemany("INSERT INTO favorite_foods VALUES(?, ?, ?)", FOODS)
 
 def create_favorite_foods(con):
+  con.execute("DROP TABLE IF EXISTS favorite_foods")
   con.execute(sql_create_favorite_foods)
 
 def alter_people_animals_food(con):
